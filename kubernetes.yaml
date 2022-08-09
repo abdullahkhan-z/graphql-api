@@ -108,7 +108,7 @@ spec:
   rules:
   - http:
       paths:
-        - path: /graphql
+        - path: /.*
           pathType: Prefix
           backend:
             service:
