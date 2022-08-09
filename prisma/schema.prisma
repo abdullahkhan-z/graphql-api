@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model cities {
+  index      BigInt  @id
+  Country    String?
+  City       String?
+  Population BigInt?
+  Latitude   Float?  @db.Real
+  Longitude  Float?  @db.Real
+}
+
+model development_index {
+  index      BigInt  @id
+  HDI_Rank   BigInt? @map("HDI Rank")
+  Country    String?
+  GDI_Value  Float?  @db.Real
+  GDI_Group  BigInt?
+  HDI_Female Float?  @db.Real
+  HDI_Male   Float?  @db.Real
+}
+
+model users {
+   user_id Int @id @default(autoincrement())
+   username String
+   passwordHash String
+}

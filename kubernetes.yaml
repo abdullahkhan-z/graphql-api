@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deployment
+  labels:
+    app.kubernetes.io/name: redis_deployment
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cache
+  replicas: 1
+  template:
+    metadata:
+      name: redis
+      labels:
+        app.kubernetes.io/name: cache
+    spec:
+      containers:
+      - name: cache
+        image: redis #using latest
+        env:
+          - name: ALLOW_EMPTY_PASSWORD 
+            value: "yes"
+        ports:
+        - containerPort: 6379
+          name: cache-svc
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  labels:
+    app.kubernetes.io/name: cache-service
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: cache
+  ports:
+  - port: 6379
+    targetPort: 6379
+
+      
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: main-app-deployment
+  labels:
+    app.kubernetes.io/name: main-app-deployment
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: main_app
+  replicas: 1
+  template:
+    metadata:
+      name: main-application
+      labels:
+        app.kubernetes.io/name: main_app
+    spec:
+      containers:
+      - name: main-app-api
+        image: lordsazuko/graphql-api
+        env:
+          - name: NODE_ENV 
+            value: "production"
+          - name: PORT 
+            value: "80"
+          - name: ENABLE_CSRF
+            value: "false"
+          - name: ENABLE_GRAPHQL_PLAYGROUND
+            value: "true"
+          - name: CACHE_MAX_AGE 
+            value: "20"
+          - name: REDIS_URL
+            value: "redis-service.default.svc.cluster.local"
+          - name: REDIS_PORT
+            value: "6379"
+          - name : ENABLE_CACHE
+            value: "true"
+        ports:
+          - containerPort: 80
+            name: graphql-api-svc
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-service
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: main_app
+  ports:
+  - port: 80
+    targetPort: 80
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+spec:
+  rules:
+  - http:
+      paths:
+        - path: /graphql
+          pathType: Prefix
+          backend:
+            service:
+              name: api-service
+              port:
+                number: 80

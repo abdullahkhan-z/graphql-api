@@ -1,0 +1,37 @@
+services:
+  redis:
+    image: redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - cache:/data
+    expose:
+      - "6379"
+  api:
+    build: .
+    image: graphql-api
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+      - "3000:3000"
+    volumes:
+      - .:/app
+    environment:
+      - NODE_ENV=production
+      - PORT=80
+      - REDIS_URL=redis
+      - REDIS_PORT=6379
+      - DATABASE_URL=postgresql://sentium:Interviewdb1!@51.159.11.187:55402/abdullah?scehma=public
+      - ENABLE_CSRF=false
+      - ENABLE_GRAPHQL_PLAYGROUND=true
+      - CACHE_MAX_AGE=20
+      - ENABLE_CACHE=true
+    depends_on:
+      - redis
+volumes:
+  cache:
+    driver: local
