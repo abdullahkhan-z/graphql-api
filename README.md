@@ -1,5 +1,5 @@
-- `git clone`
-- `cd`
+- `git clone https://github.com/abdullahkhan-z/test-s`
+- `cd test-s`
 - For local install `npm install`
 - Run in dev mode `npm run start:dev`
 - Run tests `npm run test`
