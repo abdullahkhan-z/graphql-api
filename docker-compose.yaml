@@ -25,7 +25,7 @@ services:
       - PORT=80
       - REDIS_URL=redis
       - REDIS_PORT=6379
-      - DATABASE_URL=postgresql://sentium:Interviewdb1!@51.159.11.187:55402/abdullah?scehma=public
+      - DATABASE_URL=<Postgres URL>
       - ENABLE_CSRF=false
       - ENABLE_GRAPHQL_PLAYGROUND=true
       - CACHE_MAX_AGE=20
