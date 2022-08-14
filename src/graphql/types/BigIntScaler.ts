@@ -3,7 +3,7 @@ import { scalarType } from "nexus";
 
 export const BigIntScaler = scalarType({
   name: "BigIntScaler",
-  description: "Description of my custom scalar type",
+  description: "Hanldes BigInt from DB",
   serialize(value: any) {
     return value.toString();
   },
